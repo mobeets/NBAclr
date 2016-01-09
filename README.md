@@ -16,3 +16,5 @@ Example:
 1. The system is told that Charlie V made a 3-pointer with 10 seconds left on the shot clock.
 2. Checking the info on stats.nba.com for Charlie V tells us that Charlie V takes and makes more threes during the interval of 15-7 seconds on the clock more than any other time.
 3. The system tweets "Charlie V takes and makes most of his threes when there's 15-7 seconds left on the shot clock."
+
+
