@@ -8,6 +8,7 @@ These comments could be tweeted while a game is going on, for example.
 
 Resources:
 
+* [Game stats](http://www.basketball-reference.com/play-index/)
 * [Track player movements in Python](http://savvastjortjoglou.com/nba-play-by-play-movements.html)
 * [Shot tracker synced with SportVu](https://www.reddit.com/r/nba/comments/2laprb/shot_tracker_syncd_with_new_sportvu_data/)
 
