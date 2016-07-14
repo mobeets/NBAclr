@@ -26,7 +26,7 @@ def load_game(d, score_keys, time_key):
     dscs = d[[time_key, 'pts_diff', 'pts_home', 'pts_away']]
     dscs = dscs.set_index([time_key], verify_integrity=True)
     dscs = dscs.reindex(xrange(SECS_PER_GAME), fill_value=0)
-    return dscs, d
+    return dscs
 
 Rpf = lambda df, delta: df.rolling(window=delta, min_periods=delta, win_type='boxcar')
 
@@ -41,10 +41,9 @@ def load(infile, score_keys=['Score1', 'Score2'], nmins=5):
     d['TotalSecsLeft'] = SECS_PER_GAME - (60*d['MinutesRemaining'] + d['SecondsRemaining'])
     # GameID	Year	Month	Day	Team1	Team2	MinutesRemaining	SecondsRemaining	TimeRemaining	Score1	Score2
     dfs = []
-    dfdfs = []
     for (game_id, dfc) in d.groupby('GameID'):
         # print game_id
-        dfg, dfg2 = load_game(dfc, score_keys=score_keys, time_key='TotalSecsLeft')
+        dfg = load_game(dfc, score_keys=score_keys, time_key='TotalSecsLeft')
 
         Rp = Rpf(dfg, 60*nmins).sum()
         ix = np.abs(dfg['pts_diff']) > 0 & Rp['pts_home'].notnull()
@@ -53,24 +52,23 @@ def load(infile, score_keys=['Score1', 'Score2'], nmins=5):
         Rp['Team2'] = dfc['Team2'].values[0]
         dfs.append(Rp[ix])
 
-        dfdfs.append(dfg2['pts_diff'])
-    print len(dfs)
     df = pd.concat(dfs)
-    fnm = os.path.join('data', 'output', 'out_{0}.csv'.format(nmins))
-    df.to_csv(fnm)
+    # fnm = os.path.join('data', 'output', 'out_{0}.csv'.format(nmins))
+    # df.to_csv(fnm)
 
-    (H, vmx) = hist2d(df, ['pts_home', 'pts_away'])
-    fnm = os.path.join('data', 'output', 'out_{0}_{1}.mat'.format(nmins, vmx))
-    savemat(fnm, {'H': H})
+    # (H, vmx) = hist2d(df, ['pts_home', 'pts_away'])
+    # fnm = os.path.join('data', 'output', 'out_{0}_{1}.mat'.format(nmins, vmx))
+    # savemat(fnm, {'H': H})
 
-    df2 = pd.concat(dfdfs)
-    vs = df2.values
-    fnm = os.path.join('data', 'output', 'ptdiffs.mat')
-    savemat(fnm, {'diffs': vs})
+    vs = (df['pts_home'] - df['pts_away'])
+    print (vs.mean(), vs.median(), vs.var())
+    print (np.abs(vs).mean(), np.abs(vs).median(), np.abs(vs).var())
 
 if __name__ == '__main__':
-    load(sys.argv[1], nmins=5)
+    # load(sys.argv[1], nmins=5)
 
-    # for nmins in [2, 4, 6, 8, 10]:
-    #     print nmins
-    #     load(sys.argv[1], nmins=nmins)
+    for nmins in [2, 4, 6, 8, 10]:
+        print '-------'
+        print nmins
+        print '-------'
+        load(sys.argv[1], nmins=nmins)
